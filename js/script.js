@@ -77,6 +77,67 @@ document.addEventListener('DOMContentLoaded', () => {
     revealTargets.forEach(el => revealObserver.observe(el));
   }
 
+  /* ---- Vista previa emergente de las evidencias ---- */
+  const evidenceCards = document.querySelectorAll('.evidencia-card.evidencia-con-imagen');
+  if (evidenceCards.length) {
+    const popupOverlay = document.createElement('div');
+    popupOverlay.className = 'evidencia-popup-overlay';
+    popupOverlay.setAttribute('role', 'dialog');
+    popupOverlay.setAttribute('aria-modal', 'true');
+    popupOverlay.setAttribute('aria-label', 'Vista previa de imagen');
+
+    const popupContent = document.createElement('div');
+    popupContent.className = 'evidencia-popup-content';
+
+    const popupImage = document.createElement('img');
+    popupImage.className = 'evidencia-popup-image';
+
+    const popupCaption = document.createElement('p');
+    popupCaption.className = 'evidencia-popup-caption';
+
+    popupContent.appendChild(popupImage);
+    popupContent.appendChild(popupCaption);
+    popupOverlay.appendChild(popupContent);
+    document.body.appendChild(popupOverlay);
+
+    let popupTimer;
+
+    const showPopup = (src, alt, label) => {
+      popupImage.src = src;
+      popupImage.alt = alt;
+      popupCaption.textContent = label;
+      popupOverlay.classList.add('active');
+      clearTimeout(popupTimer);
+      popupTimer = setTimeout(() => {
+        popupOverlay.classList.remove('active');
+      }, 3000);
+    };
+
+    evidenceCards.forEach(card => {
+      card.addEventListener('click', () => {
+        const image = card.querySelector('img');
+        const label = card.querySelector('.evidencia-label')?.textContent?.trim() || image?.alt || 'Vista previa';
+        if (image) {
+          showPopup(image.src, image.alt, label);
+        }
+      });
+    });
+
+    popupOverlay.addEventListener('click', (event) => {
+      if (event.target === popupOverlay) {
+        popupOverlay.classList.remove('active');
+        clearTimeout(popupTimer);
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        popupOverlay.classList.remove('active');
+        clearTimeout(popupTimer);
+      }
+    });
+  }
+
   /* ---- Validación y envío del formulario de contacto ---- */
   const form = document.getElementById('contactForm');
   const status = document.getElementById('formStatus');

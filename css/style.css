@@ -315,6 +315,7 @@ tbody td:nth-child(2){ font-family:var(--font-mono); color:var(--cyan); }
   font-size:0.82rem; color:rgba(234,242,255,0.7);
   background:linear-gradient(160deg, rgba(62,168,255,0.06), transparent);
   position:relative; overflow:hidden;
+  cursor:pointer;
 }
 .evidencia-con-imagen{ justify-content:flex-start; padding:0; }
 .evidencia-image{
@@ -325,6 +326,24 @@ tbody td:nth-child(2){ font-family:var(--font-mono); color:var(--cyan); }
   background:linear-gradient(180deg, transparent, rgba(4,10,22,0.9));
 }
 .ev-frame{ font-family:var(--font-display); font-size:1.8rem; color:var(--cyan); opacity:0.6; margin-bottom:auto; position:relative; z-index:1; padding:16px; }
+.evidencia-popup-overlay{
+  position:fixed; inset:0; z-index:300; display:flex; align-items:center; justify-content:center;
+  padding:24px; background:rgba(2,6,18,0.82); backdrop-filter:blur(6px);
+  opacity:0; pointer-events:none; transition:opacity 0.2s ease;
+}
+.evidencia-popup-overlay.active{ opacity:1; pointer-events:auto; }
+.evidencia-popup-content{
+  max-width:min(92vw, 760px); max-height:84vh; width:auto;
+  border:1px solid var(--line); border-radius:var(--radius); padding:12px;
+  background:var(--navy-deep); box-shadow:0 24px 60px rgba(0,0,0,0.45);
+  animation:popupIn 0.22s ease;
+}
+.evidencia-popup-image{ max-width:100%; max-height:72vh; object-fit:contain; border-radius:8px; display:block; }
+.evidencia-popup-caption{
+  margin:10px 0 0; text-align:center; font-family:var(--font-label); letter-spacing:0.08em;
+  text-transform:uppercase; color:var(--white); font-size:0.82rem;
+}
+@keyframes popupIn{ from{ transform:scale(0.95); opacity:0; } to{ transform:scale(1); opacity:1; } }
 
 /* logros / dificultades */
 .two-col{ display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--line); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; }
