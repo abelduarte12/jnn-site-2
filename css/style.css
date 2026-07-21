@@ -314,8 +314,17 @@ tbody td:nth-child(2){ font-family:var(--font-mono); color:var(--cyan); }
   display:flex; flex-direction:column; justify-content:flex-end; padding:16px;
   font-size:0.82rem; color:rgba(234,242,255,0.7);
   background:linear-gradient(160deg, rgba(62,168,255,0.06), transparent);
+  position:relative; overflow:hidden;
 }
-.ev-frame{ font-family:var(--font-display); font-size:1.8rem; color:var(--cyan); opacity:0.6; margin-bottom:auto; }
+.evidencia-con-imagen{ justify-content:flex-start; padding:0; }
+.evidencia-image{
+  position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block;
+}
+.evidencia-label{
+  position:relative; z-index:1; margin-top:auto; padding:16px; font-size:0.82rem; color:var(--white);
+  background:linear-gradient(180deg, transparent, rgba(4,10,22,0.9));
+}
+.ev-frame{ font-family:var(--font-display); font-size:1.8rem; color:var(--cyan); opacity:0.6; margin-bottom:auto; position:relative; z-index:1; padding:16px; }
 
 /* logros / dificultades */
 .two-col{ display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--line); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; }
