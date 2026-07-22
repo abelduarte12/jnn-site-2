@@ -77,6 +77,72 @@ document.addEventListener('DOMContentLoaded', () => {
     revealTargets.forEach(el => revealObserver.observe(el));
   }
 
+  /* ---- Carrusel del personal encargado ---- */
+  const personalCarousel = document.querySelector('.personal-carousel');
+  if (personalCarousel) {
+    const track = personalCarousel.querySelector('.carousel-track');
+    const slides = Array.from(track.children);
+    const prevBtn = personalCarousel.querySelector('.carousel-btn.prev');
+    const nextBtn = personalCarousel.querySelector('.carousel-btn.next');
+    const dotsContainer = document.querySelector('.carousel-dots');
+    let currentSlide = 0;
+
+    const updateCarousel = () => {
+      track.style.transform = `translateX(-${currentSlide * 100}%)`;
+      const dots = dotsContainer?.querySelectorAll('button') || [];
+      dots.forEach((dot, index) => {
+        dot.classList.toggle('is-active', index === currentSlide);
+      });
+    };
+
+    slides.forEach((_, index) => {
+      const dot = document.createElement('button');
+      dot.type = 'button';
+      dot.setAttribute('aria-label', `Ver slide ${index + 1}`);
+      dot.addEventListener('click', () => {
+        currentSlide = index;
+        updateCarousel();
+      });
+      dotsContainer?.appendChild(dot);
+    });
+
+    prevBtn?.addEventListener('click', () => {
+      currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+      updateCarousel();
+    });
+
+    nextBtn?.addEventListener('click', () => {
+      currentSlide = (currentSlide + 1) % slides.length;
+      updateCarousel();
+    });
+
+    setInterval(() => {
+      currentSlide = (currentSlide + 1) % slides.length;
+      updateCarousel();
+    }, 7000);
+
+    personalCarousel.querySelectorAll('input[type="file"]').forEach(input => {
+      input.addEventListener('change', (event) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = () => {
+          const preview = input.closest('.slide-media').querySelector('.slide-photo');
+          const caption = input.closest('.slide-media').querySelector('.slide-photo-caption');
+          if (preview) {
+            preview.src = reader.result;
+            preview.classList.add('has-image');
+          }
+          if (caption) caption.textContent = 'Foto cargada';
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+
+    updateCarousel();
+  }
+
   /* ---- Vista previa emergente de las evidencias ---- */
   const evidenceCards = document.querySelectorAll('.evidencia-card.evidencia-con-imagen');
   if (evidenceCards.length) {
