@@ -85,7 +85,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const prevBtn = personalCarousel.querySelector('.carousel-btn.prev');
     const nextBtn = personalCarousel.querySelector('.carousel-btn.next');
     const dotsContainer = document.querySelector('.carousel-dots');
+    const viewport = personalCarousel.querySelector('.carousel-viewport');
     let currentSlide = 0;
+    let startX = 0;
+    let dragging = false;
 
     const updateCarousel = () => {
       track.style.transform = `translateX(-${currentSlide * 100}%)`;
@@ -95,50 +98,50 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     };
 
+    const goToSlide = (index) => {
+      currentSlide = (index + slides.length) % slides.length;
+      updateCarousel();
+    };
+
     slides.forEach((_, index) => {
       const dot = document.createElement('button');
       dot.type = 'button';
       dot.setAttribute('aria-label', `Ver slide ${index + 1}`);
-      dot.addEventListener('click', () => {
-        currentSlide = index;
-        updateCarousel();
-      });
+      dot.addEventListener('click', () => goToSlide(index));
       dotsContainer?.appendChild(dot);
     });
 
-    prevBtn?.addEventListener('click', () => {
-      currentSlide = (currentSlide - 1 + slides.length) % slides.length;
-      updateCarousel();
+    prevBtn?.addEventListener('click', () => goToSlide(currentSlide - 1));
+    nextBtn?.addEventListener('click', () => goToSlide(currentSlide + 1));
+
+    if (slides.length > 1) {
+      setInterval(() => goToSlide(currentSlide + 1), 7000);
+    }
+
+    viewport?.addEventListener('pointerdown', (event) => {
+      dragging = true;
+      startX = event.clientX;
+      viewport.classList.add('dragging');
     });
 
-    nextBtn?.addEventListener('click', () => {
-      currentSlide = (currentSlide + 1) % slides.length;
-      updateCarousel();
+    const endSwipe = (event) => {
+      if (!dragging) return;
+      const deltaX = event.clientX - startX;
+      if (deltaX < -50) {
+        goToSlide(currentSlide + 1);
+      } else if (deltaX > 50) {
+        goToSlide(currentSlide - 1);
+      }
+      dragging = false;
+      viewport.classList.remove('dragging');
+    };
+
+    viewport?.addEventListener('pointerup', endSwipe);
+    viewport?.addEventListener('pointerleave', () => {
+      dragging = false;
+      viewport.classList.remove('dragging');
     });
-
-    setInterval(() => {
-      currentSlide = (currentSlide + 1) % slides.length;
-      updateCarousel();
-    }, 7000);
-
-    personalCarousel.querySelectorAll('input[type="file"]').forEach(input => {
-      input.addEventListener('change', (event) => {
-        const file = event.target.files?.[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = () => {
-          const preview = input.closest('.slide-media').querySelector('.slide-photo');
-          const caption = input.closest('.slide-media').querySelector('.slide-photo-caption');
-          if (preview) {
-            preview.src = reader.result;
-            preview.classList.add('has-image');
-          }
-          if (caption) caption.textContent = 'Foto cargada';
-        };
-        reader.readAsDataURL(file);
-      });
-    });
+    window.addEventListener('pointerup', endSwipe);
 
     updateCarousel();
   }
